@@ -172,7 +172,7 @@ def main():
         compute_basis,
         [Objective0, Objective1, Objective2, Objective3],
         num_nodes=n,
-        basis_indices=[2**i - 1 for i in range(0, math.ceil(np.log2(n)))],
+        basis_indices=[0, 1, 2] + list(range(3, n, 3)),
         layout="kamada",
         annotate_values=False,
         save_path=SAVE_PATH,

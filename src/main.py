@@ -26,9 +26,10 @@ def evaluate_objective():
         RelativeProjectionNormGain,
         GraphSmoothnessError,
         DiagonalizationError,
+        L1Error,
     ]:
         runner.run_experiment(
-            range(5, 80, 5),
+            range(10, 70, 3),
             basis_list,
             objective_class_list,
             error_strategy=error_strategy,

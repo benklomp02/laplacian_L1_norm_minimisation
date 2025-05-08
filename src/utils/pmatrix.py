@@ -16,7 +16,7 @@ def _compute(n: int, m: int) -> Generator[np.ndarray, None, None]:
                 yield from _rec(i + 1, fmask ^ (1 << j), gmask ^ (1 << j))
                 pm[i][j] = 0
         if gmask.bit_count() < n - i:
-            # already used values can be used
+            # already used values can be used always
             for j in range(m):
                 if (fmask >> j) & 0x1:
                     pm[i][j] = 1

@@ -48,6 +48,16 @@ class DiagonalizationError:
         return np.linalg.norm(BLB - diag, "fro") / np.linalg.norm(L, "fro")
 
 
+class L1Error:
+    """
+    Measures the total L1 error of the basis.
+    """
+
+    def compute(self, n: int, basis: np.ndarray, weights: np.ndarray) -> float:
+        L = ErrorCalculator._compute_laplacian_matrix(n, weights)
+        return np.sum(np.abs(basis.T @ L @ basis))
+
+
 class ErrorCalculator:
     def __init__(self, error_strategy: ErrorComputation = RelativeProjectionNormGain()):
         self.error_strategy = error_strategy
