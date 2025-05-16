@@ -3,33 +3,30 @@ import time
 
 import src.utils.runner as runner
 import src.algorithms.greedy as greedy
-from src.utils.objectives import (
-    Objective0,
-    Objective1,
-    Objective2,
-    Objective3,
-    RandomObjective,
-)
+import src.utils.objectives as obj
 from src.utils.errors import *
 
 
 def evaluate_objective():
     objective_class_list = [
-        Objective0,
-        Objective1,
-        Objective2,
-        Objective3,
-        RandomObjective,
+        obj.Original,
+        obj.MaxWDirection,
+        obj.MinWDirection,
+        obj.AbsDirectionDiff,
+        obj.MaxWeightDirection,
+        obj.MinWeightDirection,
+        obj.RandomObjective,
     ]
     basis_list = [greedy.compute_basis] * len(objective_class_list)
     for error_strategy in [
-        RelativeProjectionNormGain,
-        GraphSmoothnessError,
-        DiagonalizationError,
-        L1Error,
+        # TODO: Uncomment the error strategies as needed
+        # RelativeProjectionNormGain,
+        # GraphSmoothnessError,
+        # DiagonalizationError,
+        L1Variation,
     ]:
         runner.run_experiment(
-            range(10, 70, 3),
+            range(10, 100, 5),
             basis_list,
             objective_class_list,
             error_strategy=error_strategy,

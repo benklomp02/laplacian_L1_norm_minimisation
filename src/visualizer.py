@@ -164,13 +164,13 @@ def visualize_basis_vectors(
 
 def main():
     from src.algorithms.greedy import compute_basis
-    from src.utils.objectives import Objective0, Objective1, Objective2, Objective3
+    from src.utils.objectives import MaxWDirection, Objective1, Objective2, Objective3
 
     SAVE_PATH = "public/basis_vectors"
     n = 40
     visualize_basis_vectors(
         compute_basis,
-        [Objective0, Objective1, Objective2, Objective3],
+        [MaxWDirection, Objective1, Objective2, Objective3],
         num_nodes=n,
         basis_indices=[0, 1, 2] + list(range(3, n, 3)),
         layout="kamada",

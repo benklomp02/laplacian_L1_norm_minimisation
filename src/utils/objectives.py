@@ -6,6 +6,7 @@ import random
 
 
 class Objective(ABC):
+
     @abstractmethod
     def __init__(self, n: int, weights: np.ndarray):
         self._n = n
@@ -16,19 +17,101 @@ class Objective(ABC):
         raise NotImplementedError()
 
 
-class Objective0(Objective):
+class Original(Objective):
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(self._weights[i][j] for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]):
+        denom = len(I) * len(J)
+        wt = self._W(I, J)
+        return wt / denom
+
+
+class MaxWDirection(Objective):
     """The L1 norm approximation from the script."""
 
     def __init__(self, n: int, weights: np.ndarray):
         super().__init__(n, weights)
 
-    def _W(self, I: int, J: int):
+    def _W(self, I: Set[int], J: Set[int]):
         return sum(self._weights[i][j] for i in I for j in J)
 
     def compute(self, I: Set[int], J: Set[int]) -> float:
         denom = len(I) * len(J)
-        wt = self._W(I, J) / denom
-        return wt
+        wt = max(self._W(I, J), self._W(J, I))
+        return wt / denom
+
+
+class MinWDirection(Objective):
+
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(self._weights[i][j] for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]) -> float:
+        denom = len(I) * len(J)
+        wt = min(self._W(I, J), self._W(J, I))
+        return wt / denom
+
+
+class AbsDirectionDiff(Objective):
+
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(abs(self._weights[i][j] - self._weights[j][i]) for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]) -> float:
+        denom = len(I) * len(J)
+        wt = self._W(I, J)
+        return wt / denom
+
+
+class TotalDirectionWeight(Objective):
+
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(abs(self._weights[i][j] - self._weights[j][i]) for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]) -> float:
+        denom = len(I) * len(J)
+        wt = self._W(I, J) + self._W(J, I)
+        return wt / denom
+
+
+class MaxWeightDirection(Objective):
+
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(max(self._weights[i][j], self._weights[j][i]) for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]) -> float:
+        denom = len(I) * len(J)
+        wt = self._W(I, J)
+        return wt / denom
+
+
+class MinWeightDirection(Objective):
+    def __init__(self, n: int, weights: np.ndarray):
+        super().__init__(n, weights)
+
+    def _W(self, I: Set[int], J: Set[int]):
+        return sum(min(self._weights[i][j], self._weights[j][i]) for i in I for j in J)
+
+    def compute(self, I: Set[int], J: Set[int]) -> float:
+        denom = len(I) * len(J)
+        wt = self._W(I, J)
+        return wt / denom
 
 
 class Objective1(Objective):
@@ -38,7 +121,7 @@ class Objective1(Objective):
         super().__init__(n, weights)
         G = nx.from_numpy_array(weights)
 
-    def _W(self, I: int, J: int):
+    def _W(self, I: Set[int], J: Set[int]):
         return sum(min(self._weights[i][j] for j in J) for i in I)
 
     def compute(self, I: Set[int], J: Set[int]) -> float:

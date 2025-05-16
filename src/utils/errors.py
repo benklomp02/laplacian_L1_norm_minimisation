@@ -4,6 +4,7 @@ import networkx as nx
 from typing import Callable, Protocol
 
 from src.utils.objectives import Objective
+from src.utils.basis_vector import generate_random_x
 
 
 class ErrorComputation(Protocol):
@@ -48,14 +49,17 @@ class DiagonalizationError:
         return np.linalg.norm(BLB - diag, "fro") / np.linalg.norm(L, "fro")
 
 
-class L1Error:
+class L1Variation:
     """
-    Measures the total L1 error of the basis.
+    Measures the total L1 variation of the basis.
     """
 
     def compute(self, n: int, basis: np.ndarray, weights: np.ndarray) -> float:
         L = ErrorCalculator._compute_laplacian_matrix(n, weights)
-        return np.sum(np.abs(basis.T @ L @ basis))
+        return mean(
+            np.linalg.norm(L @ generate_random_x(basis), ord=1) / np.linalg.norm(x, ord=1)
+            for x in basis.T
+        )
 
 
 class ErrorCalculator:
